@@ -41,6 +41,11 @@ OPENAI_MODEL = "gpt-4o-mini"
 5. Deploy. The first run may take a few minutes while dependencies install and
    YOLO downloads model weights.
 
+6. **Important:** In Streamlit Cloud **Advanced settings**, set **Python version
+   to 3.12 or 3.11** (not 3.14). OpenCV and YOLO do not reliably support 3.14
+   on Community Cloud yet. If your app is already deployed, change this under
+   **Manage app → Settings → Python version**, then reboot.
+
 **Note:** Streamlit Community Cloud free tier deploys from **public** GitHub repos.
 Pro reference clips must be committed under `data/pros/` (or the app will show a
 setup warning). Generated outputs are not persisted between sessions.

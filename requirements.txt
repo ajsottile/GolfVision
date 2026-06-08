@@ -1,8 +1,8 @@
-supervision
-ultralytics
-opencv-python-headless
 numpy
 scipy
 streamlit
 openai
 plotly
+supervision
+ultralytics
+opencv-python-headless==4.10.0.84

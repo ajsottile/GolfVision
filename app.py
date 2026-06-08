@@ -1,20 +1,17 @@
 from __future__ import annotations
 
 import os
+import sys
 import tempfile
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import streamlit as st
 
 from golfvision import ui
-from golfvision.align import align_swings
-from golfvision.coaching import generate_coaching_tips
-from golfvision.metrics import compare_swing_metrics, compute_swing_metrics
-from golfvision.phases import detect_swing_phases
-from golfvision.pose import extract_pose_sequence
-from golfvision.recommendations import CoachingReport, format_report_markdown, generate_coaching_report
-from golfvision.render import render_side_by_side_video
-from golfvision.view import resolve_view_profile
+
+if TYPE_CHECKING:
+    from golfvision.recommendations import CoachingReport
 
 PROS_DIR = Path("data/pros")
 OUTPUTS_DIR = Path("outputs")
@@ -39,6 +36,14 @@ def run_pipeline(
     view_name: str,
     sync_start_phase: str,
 ) -> tuple[str, float, list, list]:
+    from golfvision.align import align_swings
+    from golfvision.coaching import generate_coaching_tips
+    from golfvision.metrics import compare_swing_metrics, compute_swing_metrics
+    from golfvision.phases import detect_swing_phases
+    from golfvision.pose import extract_pose_sequence
+    from golfvision.render import render_side_by_side_video
+    from golfvision.view import resolve_view_profile
+
     view_profile = resolve_view_profile(view_name)
 
     pro_sequence = extract_pose_sequence(str(pro_clip_path))
@@ -138,6 +143,8 @@ def _render_report(report: CoachingReport) -> None:
     ui.section_title("4-Week Progression")
     ui.render_week_cards(report.multiweek_plan)
 
+    from golfvision.recommendations import format_report_markdown
+
     markdown = format_report_markdown(report)
     st.download_button(
         label="Download coaching plan (Markdown)",
@@ -154,6 +161,14 @@ def main() -> None:
         "GolfVision",
         "Upload your swing, match it against a pro, and unlock an AI-built improvement plan — powered by cloudHack.",
     )
+
+    if sys.version_info >= (3, 13):
+        st.warning(
+            "This app is deployed on Python "
+            f"{sys.version_info.major}.{sys.version_info.minor}. "
+            "For OpenCV/YOLO compatibility, set **Python 3.12** (or 3.11) in "
+            "Streamlit Cloud → Manage app → Settings → Python version, then reboot."
+        )
 
     if st.session_state.get("report_schema_version") != REPORT_SCHEMA_VERSION:
         st.session_state["coaching_report"] = None
@@ -218,6 +233,8 @@ def main() -> None:
             st.info("OPENAI_API_KEY not found. Generating with the built-in rule-based coach.")
 
         if st.button("Generate AI Plan", type="secondary"):
+            from golfvision.recommendations import generate_coaching_report
+
             with st.spinner("Your AI coach is building a personalized plan..."):
                 report = generate_coaching_report(
                     comparisons=result["comparisons"],
