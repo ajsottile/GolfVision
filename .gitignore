@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+
+# Streamlit secrets (use Community Cloud secrets UI instead)
+.streamlit/secrets.toml
+
+# Generated comparison videos
+outputs/*
+!outputs/.gitkeep
+
+# YOLO weights (downloaded automatically on first run)
+*.pt
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
